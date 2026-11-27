@@ -19,7 +19,9 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
 // ====================
 
 const DIR = __dirname;
-const LOG_FILE = path.join(DIR, 'sent-log.csv');
+// node send.js --list contacts-test.csv  -> use another list; its log is sent-log-<list name>.csv
+const LIST_ARG = (() => { const i = process.argv.indexOf('--list'); return i > 0 ? process.argv[i + 1] : null; })();
+const LOG_FILE = path.join(DIR, LIST_ARG ? `sent-log-${path.parse(LIST_ARG).name}.csv` : 'sent-log.csv');
 const CHECK_ONLY = process.argv.includes('--check');
 // Chrome writes this file while "Allow remote debugging" is switched on.
 const PORT_FILE = path.join(process.env.LOCALAPPDATA || '', 'Google', 'Chrome', 'User Data', 'DevToolsActivePort');
@@ -38,6 +40,10 @@ function myChromeAddress() {
 }
 
 function findListFile() {
+  if (LIST_ARG) {
+    const p = path.isAbsolute(LIST_ARG) ? LIST_ARG : path.join(DIR, LIST_ARG);
+    return fs.existsSync(p) ? p : null;
+  }
   for (const name of ['contacts.xlsx', 'contacts.csv']) {
     const p = path.join(DIR, name);
     if (fs.existsSync(p)) return p;
@@ -289,7 +295,7 @@ async function main() {
       }
     }
 
-    console.log(`\nFinished. Sent ${sent}, skipped ${skipped}, failed ${failed}. Details in sent-log.csv`);
+    console.log(`\nFinished. Sent ${sent}, skipped ${skipped}, failed ${failed}. Details in ${path.basename(LOG_FILE)}`);
     await sleep(5000); // let the last picture finish uploading
     await client.destroy();
     process.exit(0);
