@@ -7,6 +7,10 @@ Send each person on your list their own picture and caption through WhatsApp Web
 - Writes a report of every row: sent, failed, not on WhatsApp or skipped
 - Safe to run again after a stop: pictures already sent to a number are skipped
 
+![WhatsApp Blast app: five numbered steps on the left, details on the right](docs/app.png)
+
+**[Download the latest release](https://github.com/Riekie3/Whatsapp-Blast/releases/latest)**: take the `.zip`, unzip it, and double-click `WhatsApp Blast.exe`.
+
 ## What you need
 
 - Windows
@@ -15,9 +19,7 @@ Send each person on your list their own picture and caption through WhatsApp Web
 
 ## The app (easiest)
 
-Download this repository (**Code > Download ZIP**, then unzip it), open the folder and double-click **`WhatsApp Blast.exe`**. It shows the steps in order, each with a button:
-
-![WhatsApp Blast app](docs/app.png)
+Download `WhatsApp-Blast-<version>.zip` from the [latest release](https://github.com/Riekie3/Whatsapp-Blast/releases/latest) (or **Code > Download ZIP**), unzip it, open the folder and double-click **`WhatsApp Blast.exe`**. The app needs the other files in that folder, so do not download the `.exe` on its own for a first install. It shows the steps in order, each with a button:
 
 1. **Install** (first time only): runs `1-INSTALL.bat` and closes it when done.
 2. **Connect your Chrome**: copies the setting's address, opens a new Chrome tab and shows the 3 steps. The light turns green once Chrome allows the tool.
