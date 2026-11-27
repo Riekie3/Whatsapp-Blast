@@ -120,3 +120,7 @@ This tool uses [whatsapp-web.js](https://github.com/wwebjs/whatsapp-web.js), an 
 - Only message people who know you and expect to hear from you.
 - With a new number, start with 30-50 messages a day and increase slowly.
 - Put the person's name in each caption so messages are not identical.
+
+## License
+
+Free and open source under the [MIT License](LICENSE). The libraries it uses, including whatsapp-web.js (Apache-2.0), keep their own licences.
