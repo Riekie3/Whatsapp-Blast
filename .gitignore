@@ -1,0 +1,18 @@
+# Only the files listed below are uploaded to GitHub. Everything else stays on
+# this PC: contact lists, send reports, pictures, WhatsApp login, installed packages.
+*
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/README.txt
+!/send.js
+!/package.json
+!/package-lock.json
+!/1-INSTALL.bat
+!/2-CHECK-LIST.bat
+!/3-SEND.bat
+!/contacts-template.csv
+!/pics/
+/pics/*
+!/pics/sample1.png
+!/pics/sample2.png

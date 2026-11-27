@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-blast",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Send each phone number its own picture via WhatsApp Web, 30s apart",
+  "main": "send.js",
+  "scripts": {
+    "check": "node send.js --check",
+    "send": "node send.js"
+  },
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.8",
+    "xlsx": "^0.18.5"
+  }
+}
