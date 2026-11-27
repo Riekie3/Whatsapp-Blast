@@ -2,4 +2,4 @@
 cd /d "%~dp0"
 node send.js
 echo.
-pause
+if not defined FROM_APP pause

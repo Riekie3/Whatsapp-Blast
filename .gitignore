@@ -12,6 +12,12 @@
 !/2-CHECK-LIST.bat
 !/3-SEND.bat
 !/contacts-template.csv
+!/WhatsApp Blast.exe
+!/build-app.bat
+!/app/
+!/app/*
+!/docs/
+!/docs/app.png
 !/pics/
 /pics/*
 !/pics/sample1.png

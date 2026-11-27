@@ -1,6 +1,13 @@
 WHATSAPP BLAST - one picture per row, with a wait between each chat
 =====================================================================
 
+EASIEST: USE THE APP
+  Double-click "WhatsApp Blast.exe" and click the buttons from step 1 to 5.
+  It runs the .bat files below for you, closes them when done, and shows
+  their messages under "Details". Keep the app in this folder.
+  If Windows says "Windows protected your PC", click More info > Run anyway.
+  The rest of this guide is for using the .bat files yourself.
+
 FIRST TIME ONLY
   Double-click 1-INSTALL.bat (needs internet, takes a minute).
 
@@ -38,6 +45,8 @@ RESULTS
   For a brand-new blast to the same people, delete or rename sent-log.csv.
 
 CHANGE THE WAIT TIME (now 30 seconds between chats)
+  In the app: step 5, change the number of seconds and click Save.
+  Without the app:
   1. Right-click send.js > Open with > Notepad.
      (Do not double-click send.js.)
   2. Near the top, under "Settings", find this line:

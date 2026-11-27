@@ -13,12 +13,30 @@ Send each person on your list their own picture and caption through WhatsApp Web
 - [Google Chrome](https://www.google.com/chrome/), logged in to [WhatsApp Web](https://web.whatsapp.com)
 - [Node.js](https://nodejs.org) 18 or newer
 
-## First-time setup
+## The app (easiest)
+
+Download this repository (**Code > Download ZIP**, then unzip it), open the folder and double-click **`WhatsApp Blast.exe`**. It shows the steps in order, each with a button:
+
+![WhatsApp Blast app](docs/app.png)
+
+1. **Install** (first time only): runs `1-INSTALL.bat` and closes it when done.
+2. **Connect your Chrome**: copies the setting's address, opens a new Chrome tab and shows the 3 steps. The light turns green once Chrome allows the tool.
+3. **Contact list and pictures**: **Open contact list** opens your list in Excel, or makes a new Excel list to fill in. **Use another Excel file…** makes any `.xlsx` with the right columns your list. **Pictures folder** opens `pics`.
+4. **Check list**: runs `2-CHECK-LIST.bat` and shows how many rows are ready.
+5. **Send**: set the wait between chats and save it, then **Send now** runs `3-SEND.bat`. It asks you to confirm first, shows progress, keeps the PC awake while sending, and can be stopped with **Stop**.
+
+Everything the `.bat` files print appears under **Details**, so no black windows are left open.
+
+Windows may warn that the app is from an unknown publisher, because it is not signed. Click **More info > Run anyway**. You can also build it yourself: double-click `build-app.bat` (uses the C# compiler that comes with Windows).
+
+The app has to stay in the WhatsApp Blast folder, next to `send.js`.
+
+## First-time setup without the app
 
 1. Download this repository (**Code > Download ZIP**, then unzip it) or clone it.
 2. Double-click `1-INSTALL.bat`. It needs internet and takes about a minute.
 3. Copy `contacts-template.csv` and rename the copy to `contacts.csv`.
-4. In the Chrome that is logged in to WhatsApp Web, open `chrome://inspect/#remote-debugging` and tick **Allow remote debugging for this browser instance**.
+4. In the Chrome that is logged in to WhatsApp Web, open `chrome://inspect/#remote-debugging` and tick **Allow remote debugging for this browser instance**. Chrome does not let programs open this page for you, so type or paste the address yourself.
 
 > **Security:** while that box is ticked, programs on your PC can ask to control that Chrome, including sites you are signed in to. Untick it when you have finished sending.
 
@@ -32,11 +50,11 @@ Put your pictures in the `pics` folder, then fill in `contacts.csv`. Row 1 must 
 | `image` | The picture's file name in the `pics` folder, e.g. `ali.jpg` |
 | `caption` | Optional text sent with the picture, e.g. `"Dear, Ali"` (use quotes if it contains a comma) |
 
-You can also save an Excel file as `contacts.xlsx` in the main folder. If it exists, it is used instead of `contacts.csv`.
+You can also use an Excel file named `contacts.xlsx` in the main folder. If it exists, it is used instead of `contacts.csv`. Excel is the safer choice: when Excel saves a CSV file it can turn long phone numbers into `6.01E+10`. The app's **Open contact list** button offers to turn `contacts.csv` into `contacts.xlsx` (with the phone numbers stored as text), and keeps the CSV as `contacts-before-excel.csv`. Without the app: `node send.js --to-excel`, or `node send.js --new-excel` for a new list.
 
 The numbers and names in the template are dummies. Replace them with your own.
 
-If Excel shows long numbers like `6.0E+10`, format the `phone` column as **Number** with 0 decimals before saving.
+CSV files are read as UTF-8, so captions in Chinese or with accents are sent correctly.
 
 ## Sending
 
@@ -65,7 +83,7 @@ Running `3-SEND.bat` again skips any picture already `SENT` to that number. One 
 
 ## Settings
 
-Right-click `send.js`, open it with Notepad, and edit the lines under **Settings**:
+The wait between chats can be changed in the app (step 5, **Save**). Or right-click `send.js`, open it with Notepad, and edit the lines under **Settings**:
 
 ```js
 const GAP_SECONDS = 30; // wait between each chat
@@ -79,6 +97,8 @@ const USE_MY_CHROME = true; // true = the Chrome you already use; false = a sepa
 
 | File | Purpose |
 |---|---|
+| `WhatsApp Blast.exe` | The app with a button for each step |
+| `build-app.bat`, `app/` | Source of the app and the script that builds it |
 | `1-INSTALL.bat` | Installs the packages (first time only) |
 | `2-CHECK-LIST.bat` | Checks the list without sending |
 | `3-SEND.bat` | Sends the messages |
@@ -89,7 +109,7 @@ const USE_MY_CHROME = true; // true = the Chrome you already use; false = a sepa
 
 ## Privacy
 
-`.gitignore` only allows the program files, the template and the two sample pictures. Your contact lists, reports, pictures and Chrome data are not committed. Do not force-add them.
+`.gitignore` only allows the program files, the app, the template, the README screenshot and the two sample pictures. Your contact lists, reports, pictures and Chrome data are not committed. Do not force-add them.
 
 ## Use responsibly
 

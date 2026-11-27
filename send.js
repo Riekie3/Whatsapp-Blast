@@ -2,6 +2,8 @@
 //
 //   node send.js          -> send to everyone in the list, using WhatsApp Web in your Chrome
 //   node send.js --check  -> only check the list (numbers + picture files), sends nothing
+//   node send.js --new-excel -> make a contacts.xlsx to fill in
+//   node send.js --to-excel  -> turn contacts.csv into contacts.xlsx
 //
 // The list is contacts.xlsx (or contacts.csv if there is no .xlsx) in this folder.
 // Columns: phone | image | caption   (caption is optional)
@@ -61,8 +63,16 @@ function findImage(raw) {
   return candidates.find(p => fs.existsSync(p) && fs.statSync(p).isFile()) || null;
 }
 
+// A CSV is read as UTF-8 text, so captions with accents or Chinese are not garbled.
+function openBook(file, raw = false) {
+  if (/\.csv$/i.test(file)) {
+    return XLSX.read(fs.readFileSync(file, 'utf8').replace(/^﻿/, ''), { type: 'string', raw });
+  }
+  return XLSX.readFile(file, { raw: false });
+}
+
 function readList(file) {
-  const wb = XLSX.readFile(file, { raw: false });
+  const wb = openBook(file);
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
   return rows.map((row, i) => {
     const get = key => {
@@ -114,7 +124,64 @@ function log(r, status, detail = '') {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// ===== Excel list (used by the app's "Contact list" buttons) =====
+const XLSX_LIST = path.join(DIR, 'contacts.xlsx');
+const CSV_LIST = path.join(DIR, 'contacts.csv');
+
+// Phone numbers are stored as text, so Excel cannot turn them into 6.01E+10.
+function writeExcelList(file, rows) {
+  const ws = XLSX.utils.aoa_to_sheet([['phone', 'image', 'caption'], ...rows.map(r => r.map(v => String(v ?? '')))]);
+  for (let i = 1; i <= rows.length; i++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: i, c: 0 })];
+    if (cell) { cell.t = 's'; cell.z = '@'; }
+  }
+  ws['!cols'] = [{ wch: 18 }, { wch: 40 }, { wch: 45 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'contacts');
+  XLSX.writeFile(wb, file);
+}
+
+// node send.js --new-excel : make contacts.xlsx with two dummy rows to fill in
+function newExcel() {
+  if (fs.existsSync(XLSX_LIST)) { console.log('contacts.xlsx already exists.'); process.exitCode = 2; return; }
+  writeExcelList(XLSX_LIST, [
+    ['60000000001', 'sample1.png', 'Dear, Guest One'],
+    ['60000000002', 'sample2.png', 'Dear, Guest Two'],
+  ]);
+  console.log('Made contacts.xlsx with 2 example rows.');
+}
+
+// node send.js --to-excel : turn contacts.csv into contacts.xlsx, check nothing changed,
+// then keep the CSV as contacts-before-excel.csv
+function toExcel() {
+  if (!fs.existsSync(CSV_LIST)) { console.log('contacts.csv not found.'); process.exitCode = 1; return; }
+  if (fs.existsSync(XLSX_LIST)) { console.log('contacts.xlsx already exists.'); process.exitCode = 2; return; }
+  const wb = openBook(CSV_LIST, true); // raw: keep numbers exactly as typed
+  const [head = [], ...body] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '', raw: false });
+  const col = name => head.findIndex(h => String(h).trim().toLowerCase() === name);
+  const idx = ['phone', 'image', 'caption'].map(col);
+  const rows = body.map(r => idx.map(i => (i < 0 ? '' : String(r[i] ?? '').trim())))
+    .filter(r => r[0] || r[1]);
+  writeExcelList(XLSX_LIST, rows);
+
+  const key = r => [r.phone, r.imageRaw, r.caption].join('|');
+  const a = readList(CSV_LIST).map(key), b = readList(XLSX_LIST).map(key);
+  if (a.length !== b.length || a.some((k, i) => k !== b[i])) {
+    fs.unlinkSync(XLSX_LIST);
+    console.log('Could not convert the list exactly, so nothing was changed.');
+    process.exitCode = 1;
+    return;
+  }
+  let backup = path.join(DIR, 'contacts-before-excel.csv');
+  if (fs.existsSync(backup)) backup = path.join(DIR, `contacts-before-excel-${Date.now()}.csv`);
+  fs.renameSync(CSV_LIST, backup);
+  console.log(`Made contacts.xlsx with ${b.length} rows. The old list is kept as ${path.basename(backup)}.`);
+}
+
 async function main() {
+  if (process.argv.includes('--new-excel')) return newExcel();
+  if (process.argv.includes('--to-excel')) return toExcel();
+
   const file = findListFile();
   if (!file) {
     console.log('No contacts.xlsx or contacts.csv found in this folder.');
